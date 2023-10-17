@@ -7,7 +7,7 @@ A multipurpose Discord Bot that aims to replicate the functionality of other pop
 If you wish to install and run HexaBot, follow these steps:
 ```sh
 git clone https://github.com/ButterDebugger/HexaBot.git
-cd WonkChat
+cd HexaBot
 npm install
 npm start
 ```
