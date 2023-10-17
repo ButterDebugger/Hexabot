@@ -1,0 +1,62 @@
+{
+	"activity": {
+		"status": "online",
+		"activities": [
+			"in many cups of coffee",
+			"at the edges of the known universe",
+			"on the edge",
+			"at a funeral",
+			"games",
+			"with black magic",
+			"on a server",
+			"with kitchen utensils",
+			"in a basement",
+			"down a dark dangerous alley",
+			"with paper planes",
+			"in a simulation",
+			"pretend to be a pizza boy",
+			"in the sun",
+			"with peoples emotions",
+			"in a microwave",
+			"with poisoned fruit punch",
+			"in a revolving door",
+			"with a clock",
+			"with a shoe",
+			"with the human psyche",
+			"with life itself",
+			{
+				"type": "Competing",
+				"name": "a game of chess"
+			},
+			{
+				"type": "Watching",
+				"name": "the world burn"
+			},
+			{
+				"type": "Listening",
+				"name": "the sound of the ocean"
+			},
+			{
+				"type": "Listening",
+				"name": "music"
+			},
+			{
+				"type": "Listening",
+				"name": "the ramblings of a lunatic"
+			},
+			{
+				"type": "Streaming",
+				"name": "with my human friend",
+				"url": "https://twitch.tv/butterdebugger/"
+			}
+		],
+		"interval": 43200000
+	},
+	"emojis": {
+		"up_vote": "👍",
+		"down_vote": "👎",
+		"check_mark": "1163654397218279464",
+		"cross_mark": "1163654395880280065"
+	},
+	"json_spacing": 4
+}

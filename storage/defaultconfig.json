@@ -1,0 +1,22 @@
+{
+    "logging_channel": null,
+    "log_member_joins": false,
+    "log_member_leaves": false,
+    "log_message_deletion": false,
+    "log_message_edits": false,
+    "log_member_banned": false,
+    "log_member_unbanned": false,
+    "log_member_kicked": false,
+    "log_invite_added": false,
+    "log_invite_removed": false,
+    "use_sticky_roles": false,
+    "sticky_roles": [],
+    "use_auto_roles": false,
+    "auto_roles": [],
+    "owner_only": false,
+    "counting_channel": null,
+    "counting_topic": null,
+    
+    "counting_emoji_style": "normal",
+    "counting_number_style": "normal"
+}
