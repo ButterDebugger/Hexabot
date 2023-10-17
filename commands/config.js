@@ -79,6 +79,36 @@ const data = new SlashCommandBuilder()
 					.setName('owner_only')
 					.setDescription('Whether the owner is the only member allowed to edit the config')
 			)
+			.addStringOption(option =>
+				option
+					.setName('join_message')
+					.setDescription('Custom user join message. Use {user} and {server} as a placeholder')
+					.setMaxLength(1000)
+			)
+			.addStringOption(option =>
+				option
+					.setName('join_direct_message')
+					.setDescription('Custom user join private message. Use {user} and {server} as a placeholder')
+					.setMaxLength(1000)
+			)
+			.addChannelOption(option =>
+				option
+					.setName('join_message_channel')
+					.setDescription('The channel where join messages will be sent')
+					.addChannelTypes(ChannelType.GuildText)
+			)
+			.addStringOption(option =>
+				option
+					.setName('leave_message')
+					.setDescription('Custom user leave message. Use {user} and {server} as a placeholder')
+					.setMaxLength(1000)
+			)
+			.addChannelOption(option =>
+				option
+					.setName('leave_message_channel')
+					.setDescription('The channel where leave messages will be sent')
+					.addChannelTypes(ChannelType.GuildText)
+			)
 	)
 	
 	.addSubcommand(subcommand =>
@@ -114,6 +144,7 @@ const data = new SlashCommandBuilder()
 						{ name: 'auto_roles', value: 'auto_roles' },
 						{ name: 'owner_only', value: 'owner_only' },
 						{ name: 'counting', value: 'counting' },
+						{ name: 'join_leave_messages', value: 'join_leave_messages' },
 					)
 			)
 	);
@@ -155,11 +186,18 @@ module.exports = {
 			let sticky_roles = bot.ConfigManager.getConfigValue(guildid, "use_sticky_roles");
 			let auto_roles = bot.ConfigManager.getConfigValue(guildid, "use_auto_roles");
 			let owner_only = bot.ConfigManager.getConfigValue(guildid, "owner_only");
+			let counting_channel = bot.ConfigManager.getConfigValue(guildid, "counting_channel");
+			let counting_topic = bot.ConfigManager.getConfigValue(guildid, "counting_topic");
+			let join_message = bot.ConfigManager.getConfigValue(guildid, "join_message");
+			let join_direct_message = bot.ConfigManager.getConfigValue(guildid, "join_direct_message");
+			let join_message_channel = bot.ConfigManager.getConfigValue(guildid, "join_message_channel");
+			let leave_message = bot.ConfigManager.getConfigValue(guildid, "leave_message");
+			let leave_message_channel = bot.ConfigManager.getConfigValue(guildid, "leave_message_channel");
 
 			let embed = new EmbedBuilder()
 				.setTitle("Current Configuration")
 				.addFields(
-					{ name: 'logging_channel', value: logging_channel == null ? "Not Configured" : channelMention(logging_channel), inline: true },
+					{ name: 'logging_channel', value: logging_channel === null ? "Not Configured" : channelMention(logging_channel), inline: true },
 					{ name: 'log_member_joins', value: log_member_joins ? "True" : "False", inline: true },
 					{ name: 'log_member_leaves', value: log_member_leaves ? "True" : "False", inline: true },
 					{ name: 'log_message_deletion', value: log_message_deletion ? "True" : "False", inline: true },
@@ -172,6 +210,13 @@ module.exports = {
 					{ name: 'sticky_roles', value: sticky_roles ? "True" : "False", inline: true },
 					{ name: 'auto_roles', value: auto_roles ? "True" : "False", inline: true },
 					{ name: 'owner_only', value: owner_only ? "True" : "False", inline: true },
+					{ name: 'counting_channel', value: counting_channel === null ? "Not Configured" : channelMention(counting_channel), inline: true },
+					{ name: 'counting_topic', value: counting_topic === null ? "Not Configured" : counting_topic, inline: true },
+					{ name: 'join_message', value: join_message === null ? "Not Configured" : join_message, inline: true },
+					{ name: 'join_direct_message', value: join_direct_message === null ? "Not Configured" : join_direct_message, inline: true },
+					{ name: 'join_message_channel', value: join_message_channel === null ? "Not Configured" : channelMention(join_message_channel), inline: true },
+					{ name: 'leave_message', value: leave_message === null ? "Not Configured" : leave_message, inline: true },
+					{ name: 'leave_message_channel', value: leave_message_channel === null ? "Not Configured" : channelMention(leave_message_channel), inline: true },
 				)
 				.setColor(0x202225);
 
@@ -193,6 +238,11 @@ module.exports = {
 			let sticky_roles = options.getBoolean("sticky_roles");
 			let auto_roles = options.getBoolean("auto_roles");
 			let owner_only = options.getBoolean("owner_only");
+			let join_message = options.getString("join_message");
+			let join_direct_message = options.getString("join_direct_message");
+			let join_message_channel = options.getChannel("join_message_channel");
+			let leave_message = options.getString("leave_message");
+			let leave_message_channel = options.getChannel("leave_message_channel");
 
 			if (logging_channel !== null) {
 				bot.ConfigManager.setConfigValue(guildid, "logging_channel", logging_channel.id);
@@ -232,6 +282,21 @@ module.exports = {
 			}
 			if (owner_only !== null) {
 				bot.ConfigManager.setConfigValue(guildid, "owner_only", owner_only);
+			}
+			if (join_message !== null) {
+				bot.ConfigManager.setConfigValue(guildid, "join_message", join_message);
+			}
+			if (join_direct_message !== null) {
+				bot.ConfigManager.setConfigValue(guildid, "join_direct_message", join_direct_message);
+			}
+			if (join_message_channel !== null) {
+				bot.ConfigManager.setConfigValue(guildid, "join_message_channel", join_message_channel.id);
+			}
+			if (leave_message !== null) {
+				bot.ConfigManager.setConfigValue(guildid, "leave_message", leave_message);
+			}
+			if (leave_message_channel !== null) {
+				bot.ConfigManager.setConfigValue(guildid, "leave_message_channel", leave_message_channel.id);
 			}
 
 			var embed = new EmbedBuilder()
@@ -286,6 +351,14 @@ module.exports = {
 				bot.ConfigManager.deleteConfigValue(guildid, "counting_topic");
 				
 				embed.setDescription(`The ${inlineCode("counting")} options in the configuration has been reset to its default value.`);
+			} else if (option === "join_leave_messages") {
+				bot.ConfigManager.deleteConfigValue(guildid, "join_message");
+				bot.ConfigManager.deleteConfigValue(guildid, "join_direct_message");
+				bot.ConfigManager.deleteConfigValue(guildid, "join_message_channel");
+				bot.ConfigManager.deleteConfigValue(guildid, "leave_message");
+				bot.ConfigManager.deleteConfigValue(guildid, "leave_message_channel");
+				
+				embed.setDescription(`The ${inlineCode("join_leave_messages")} options in the configuration has been reset to its default value.`);
 			}
 
 			interaction.reply({

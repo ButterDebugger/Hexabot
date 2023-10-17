@@ -14,9 +14,14 @@
     "use_auto_roles": false,
     "auto_roles": [],
     "owner_only": false,
+    "join_message": null,
+    "join_direct_message": null,
+    "join_message_channel": null,
+    "leave_message": null,
+    "leave_message_channel": null,
     "counting_channel": null,
     "counting_topic": null,
-    
+
     "counting_emoji_style": "normal",
     "counting_number_style": "normal"
 }
