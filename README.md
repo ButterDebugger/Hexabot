@@ -1,6 +1,6 @@
 # HexaBot
 
-A multipurpose Discord Bot that aims to replicate the functionality of other popular Discord Bots, such as moderation, music, games, and more.
+A multipurpose Discord Bot that aims to replicate the functionality of other popular Discord Bots, such as moderation, music, logging, and more.
 
 ## Getting Started
 
