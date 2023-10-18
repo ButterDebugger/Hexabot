@@ -28,6 +28,7 @@ bot.on("ready", async () => {
     await require("./logger.js")(bot);
     await require("./counting.js")(bot);
     await require("./joinleavemsgs.js")(bot);
+    await require("./autoStickyRoles.js")(bot);
     
     // Set bot status and activity
     bot.user.setStatus(config.activity.status);

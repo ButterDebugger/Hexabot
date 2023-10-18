@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, ChannelType, inlineCode, channelMention, ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, ChannelType, inlineCode, channelMention, roleMention } = require("discord.js");
 
 const data = new SlashCommandBuilder()
 	.setName('config')
@@ -110,7 +110,50 @@ const data = new SlashCommandBuilder()
 					.addChannelTypes(ChannelType.GuildText)
 			)
 	)
-	
+	.addSubcommand(subcommand =>
+		subcommand
+			.setName('add_auto_role')
+			.setDescription('Add an auto role')
+			.addRoleOption(option =>
+				option
+					.setName('role')
+					.setDescription('The role you want to be automatically assigned to new members')
+					.setRequired(true)
+			)
+	)
+	.addSubcommand(subcommand =>
+		subcommand
+			.setName('remove_auto_role')
+			.setDescription('Remove an auto role')
+			.addRoleOption(option =>
+				option
+					.setName('role')
+					.setDescription('The role you no longer want to be automatically assigned to new members')
+					.setRequired(true)
+			)
+	)
+	.addSubcommand(subcommand =>
+		subcommand
+			.setName('add_sticky_role')
+			.setDescription('Add an sticky role')
+			.addRoleOption(option =>
+				option
+					.setName('role')
+					.setDescription('The role you want to be automatically reassigned to returning members')
+					.setRequired(true)
+			)
+	)
+	.addSubcommand(subcommand =>
+		subcommand
+			.setName('remove_sticky_role')
+			.setDescription('Remove an sticky role')
+			.addRoleOption(option =>
+				option
+					.setName('role')
+					.setDescription('The role you no longer want to be automatically reassigned to returning members')
+					.setRequired(true)
+			)
+	)
 	.addSubcommand(subcommand =>
 		subcommand
 			.setName('counting')
@@ -183,8 +226,10 @@ module.exports = {
 			let log_member_kicked = bot.ConfigManager.getConfigValue(guildid, "log_member_kicked");
 			let log_invite_added = bot.ConfigManager.getConfigValue(guildid, "log_invite_added");
 			let log_invite_removed = bot.ConfigManager.getConfigValue(guildid, "log_invite_removed");
-			let sticky_roles = bot.ConfigManager.getConfigValue(guildid, "use_sticky_roles");
-			let auto_roles = bot.ConfigManager.getConfigValue(guildid, "use_auto_roles");
+			let use_sticky_roles = bot.ConfigManager.getConfigValue(guildid, "use_sticky_roles");
+			let sticky_roles = bot.ConfigManager.getConfigValue(guildid, "sticky_roles");
+			let use_auto_roles = bot.ConfigManager.getConfigValue(guildid, "use_auto_roles");
+			let auto_roles = bot.ConfigManager.getConfigValue(guildid, "auto_roles");
 			let owner_only = bot.ConfigManager.getConfigValue(guildid, "owner_only");
 			let counting_channel = bot.ConfigManager.getConfigValue(guildid, "counting_channel");
 			let counting_topic = bot.ConfigManager.getConfigValue(guildid, "counting_topic");
@@ -207,8 +252,24 @@ module.exports = {
 					{ name: 'log_member_kicked', value: log_member_kicked ? "True" : "False", inline: true },
 					{ name: 'log_invite_added', value: log_invite_added ? "True" : "False", inline: true },
 					{ name: 'log_invite_removed', value: log_invite_removed ? "True" : "False", inline: true },
-					{ name: 'sticky_roles', value: sticky_roles ? "True" : "False", inline: true },
-					{ name: 'auto_roles', value: auto_roles ? "True" : "False", inline: true },
+					{
+						name: 'sticky_roles',
+						value: use_sticky_roles
+							? sticky_roles.length > 0
+								? sticky_roles.map(roleId => `${roleMention(roleId)}`).join('\n')
+								: "None"
+							: "Not Enabled",
+						inline: true
+					},
+					{
+						name: 'auto_roles',
+						value: use_auto_roles
+							? auto_roles.length > 0
+								? auto_roles.map(roleId => `${roleMention(roleId)}`).join('\n')
+								: "none"
+							: "Not Enabled",
+						inline: true
+					},
 					{ name: 'owner_only', value: owner_only ? "True" : "False", inline: true },
 					{ name: 'counting_channel', value: counting_channel === null ? "Not Configured" : channelMention(counting_channel), inline: true },
 					{ name: 'counting_topic', value: counting_topic === null ? "Not Configured" : counting_topic, inline: true },
@@ -360,6 +421,126 @@ module.exports = {
 				
 				embed.setDescription(`The ${inlineCode("join_leave_messages")} options in the configuration has been reset to its default value.`);
 			}
+
+			interaction.reply({
+				embeds: [ embed ],
+				ephemeral: true
+			});
+		} else if (options.getSubcommand() === "add_auto_role") {
+			let role = options.getRole("role");
+			let usingAutoRoles = bot.ConfigManager.getConfigValue(guildid, "use_auto_roles");
+
+			if (!usingAutoRoles) {
+				let embed = new EmbedBuilder()
+					.setTitle("Configuration Conflict")
+					.setDescription(`${inlineCode("auto_roles")} must be enabled in the config to add any auto roles`)
+					.setColor(0x202225);
+	
+				interaction.reply({
+					embeds: [ embed ],
+					ephemeral: true
+				});
+				return;
+			}
+			
+			let autoRoles = bot.ConfigManager.getConfigValue(guildid, "auto_roles");
+			if (!autoRoles.includes(role.id)) autoRoles.push(role.id);
+			bot.ConfigManager.setConfigValue(guildid, "auto_roles", autoRoles);
+
+			let embed = new EmbedBuilder()
+				.setTitle("Configuration Edited")
+				.setDescription(`${inlineCode(role.name)} has been added to the list of auto roles`)
+				.setColor(0x202225);
+
+			interaction.reply({
+				embeds: [ embed ],
+				ephemeral: true
+			});
+		} else if (options.getSubcommand() === "remove_auto_role") {
+			let role = options.getRole("role");
+			let usingAutoRoles = bot.ConfigManager.getConfigValue(guildid, "use_auto_roles");
+
+			if (!usingAutoRoles) {
+				let embed = new EmbedBuilder()
+					.setTitle("Configuration Conflict")
+					.setDescription(`${inlineCode("auto_roles")} must be enabled in the config to remove any auto roles`)
+					.setColor(0x202225);
+	
+				interaction.reply({
+					embeds: [ embed ],
+					ephemeral: true
+				});
+				return;
+			}
+			
+			let autoRoles = bot.ConfigManager.getConfigValue(guildid, "auto_roles");
+			autoRoles = autoRoles.filter(roleId => roleId !== role.id);
+			bot.ConfigManager.setConfigValue(guildid, "auto_roles", autoRoles);
+
+			let embed = new EmbedBuilder()
+				.setTitle("Configuration Edited")
+				.setDescription(`${inlineCode(role.name)} has been removed to the list of auto roles`)
+				.setColor(0x202225);
+
+			interaction.reply({
+				embeds: [ embed ],
+				ephemeral: true
+			});
+		} else if (options.getSubcommand() === "add_sticky_role") {
+			let role = options.getRole("role");
+			let usingStickyRoles = bot.ConfigManager.getConfigValue(guildid, "use_sticky_roles");
+
+			if (!usingStickyRoles) {
+				let embed = new EmbedBuilder()
+					.setTitle("Configuration Conflict")
+					.setDescription(`${inlineCode("sticky_roles")} must be enabled in the config to add any sticky roles`)
+					.setColor(0x202225);
+	
+				interaction.reply({
+					embeds: [ embed ],
+					ephemeral: true
+				});
+				return;
+			}
+			
+			let stickyRoles = bot.ConfigManager.getConfigValue(guildid, "sticky_roles");
+			if (!stickyRoles.includes(role.id)) stickyRoles.push(role.id);
+			bot.ConfigManager.setConfigValue(guildid, "sticky_roles", stickyRoles);
+
+			let embed = new EmbedBuilder()
+				.setTitle("Configuration Edited")
+				.setDescription(`${inlineCode(role.name)} has been added to the list of sticky roles`)
+				.setColor(0x202225);
+
+			interaction.reply({
+				embeds: [ embed ],
+				ephemeral: true
+			});
+		} else if (options.getSubcommand() === "remove_sticky_role") {
+			let role = options.getRole("role");
+			let usingStickyRoles = bot.ConfigManager.getConfigValue(guildid, "use_sticky_roles");
+
+			if (!usingStickyRoles) {
+				let embed = new EmbedBuilder()
+					.setTitle("Configuration Conflict")
+					.setDescription(`${inlineCode("sticky_roles")} must be enabled in the config to remove any sticky roles`)
+					.setColor(0x202225);
+	
+				interaction.reply({
+					embeds: [ embed ],
+					ephemeral: true
+				});
+				return;
+			}
+			
+			let stickyRoles = bot.ConfigManager.getConfigValue(guildid, "sticky_roles");
+			stickyRoles = stickyRoles.filter(roleId => roleId !== role.id);
+			bot.ConfigManager.setConfigValue(guildid, "sticky_roles", stickyRoles);
+
+			let embed = new EmbedBuilder()
+				.setTitle("Configuration Edited")
+				.setDescription(`${inlineCode(role.name)} has been removed to the list of sticky roles`)
+				.setColor(0x202225);
 
 			interaction.reply({
 				embeds: [ embed ],
