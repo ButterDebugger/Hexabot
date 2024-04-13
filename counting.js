@@ -39,11 +39,11 @@ module.exports = async (bot) => {
 				if (number - 1 == data.counting_number) { // If number was the next number
 					data.counting_number = number; // Set the new number
 					data.counting_last_guesser = message.member.user.id; // Set the last guesser
-					
+
 					if (number > data.counting_high_score) { // Set the new highscore
 						data.counting_high_score = number;
 					}
-					
+
 					bot.DataManager.setGuildData(message.guild.id, data); // Save guild data
 					if (number == 100) {
 						message.react("💯").catch(console.error);
@@ -54,7 +54,7 @@ module.exports = async (bot) => {
 					message.reply("You've messed up the counting! The current number has been reset to 0.")
 					data.counting_number = 0; // Reset counting
 					data.counting_last_guesser = null; // Reset last guesser
-					
+
 					bot.DataManager.setGuildData(message.guild.id, data); // Save guild data
 					message.react(emojis.cross_mark).catch(console.error);
 				}
@@ -62,14 +62,14 @@ module.exports = async (bot) => {
 				message.reply("It isn't your turn! The current number is now 0.")
 				data.counting_number = 0; // Reset counting
 				data.counting_last_guesser = null; // Reset last guesser
-				
+
 				bot.DataManager.setGuildData(message.guild.id, data); // Save guild data
 				message.react(emojis.cross_mark).catch(console.error);
 			}
-			
+
 			if (typeof countingTopic == "string") {
 				let customTopic = countingTopic.replace(/{highscore}/g, data.counting_high_score);
-				
+
 				if (message.channel.topic !== customTopic) {
 					message.channel.setTopic(customTopic).catch(console.error);
 				}
@@ -85,7 +85,7 @@ module.exports = async (bot) => {
 
         let data = bot.DataManager.getGuildData(oldMessage.guild.id);
         let number = Number(oldMessage.content);
-        
+
         if (typeof data.counting_number == "undefined") data.counting_number = 0;
 
         if (!isNaN(number) && number === data.counting_number) {
@@ -96,12 +96,12 @@ module.exports = async (bot) => {
                 .setFooter({
                     text: `Sent by ${userTagFormat(oldMessage.member.user)}`
                 });
-            
+
             countingChannel.send({
                 embeds: [ embed ]
             }).then(sentEmbed => {
                 sentEmbed.react(emojis.check_mark).catch(console.error);
-            });
+            }).catch(console.error);
         }
     });
     bot.on("messageDelete", async (message) => {
@@ -113,7 +113,7 @@ module.exports = async (bot) => {
 
         let data = bot.DataManager.getGuildData(message.guild.id);
         let number = Number(message.content);
-        
+
         if (typeof data.counting_number == "undefined") data.counting_number = 0;
 
         if (!isNaN(number) && number === data.counting_number) {
@@ -124,12 +124,12 @@ module.exports = async (bot) => {
                 .setFooter({
                     text: `Sent by ${userTagFormat(message.member.user)}`
                 });
-            
+
             countingChannel.send({
                 embeds: [ embed ]
             }).then(sentEmbed => {
                 sentEmbed.react(emojis.check_mark).catch(console.error);
-            });
+            }).catch(console.error);
         }
     });
 }
