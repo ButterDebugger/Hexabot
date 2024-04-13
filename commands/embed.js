@@ -47,6 +47,14 @@ module.exports = {
 		let url = options.getString("url");
 		let footer = options.getString("footer");
 
+		if (title === null && description === null && footer === null) {
+			interaction.reply({
+				content: "Please provide a title, description, or footer.",
+				ephemeral: true
+			});
+			return;
+		}
+
 		let embed = new EmbedBuilder();
 
 		if (typeof title == "string") {
@@ -57,7 +65,7 @@ module.exports = {
 		}
 		if (typeof color == "string") {
 			let colorRegex = /^#([0-9a-fA-F]{6})$/g;
-			
+
 			if (colorRegex.test(color)) {
 				embed.setColor(color);
 			} else {
@@ -85,16 +93,18 @@ module.exports = {
 			});
 		}
 
-		try {
-			interaction.channel.send({
-				embeds: [ embed ]
+		interaction.channel.send({
+			embeds: [ embed ]
+		}).then(() => {
+			interaction.reply({
+				content: "Embed has been sent!",
+				ephemeral: true
 			});
-		} catch (error) {
+		}).catch(() => {
 			interaction.reply({
 				content: "Sorry, I wasn't able to send the embed.",
 				ephemeral: true
 			});
-			return;
-		}
+		});
 	}
 };
