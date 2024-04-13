@@ -28,7 +28,7 @@ module.exports = async (bot) => {
             limit: 6,
             type: AuditLogEvent.MessageDelete
         }).catch(console.error);
-        
+
         let auditEntry = fetchedLogs.entries.filter(a => {
             return (
                 Date.now() - a.createdTimestamp < 20000 &&
@@ -54,7 +54,7 @@ module.exports = async (bot) => {
             embeds: [ embed ]
         });
     });
-    
+
     bot.on("messageUpdate", async (oldMessage, newMessage) => {
         let loggingChannel = getLoggingChannel(bot, newMessage.guild);
         if (loggingChannel == null) return;
@@ -62,6 +62,7 @@ module.exports = async (bot) => {
         if (!isLogged(bot, newMessage.guild.id, "message_edits")) return;
 
         if (newMessage.author.bot) return;
+        if (oldMessage.content === newMessage.content) return; // Only log if the message content changes
 
         // Create message embed
 		let embed = new EmbedBuilder()
@@ -80,7 +81,7 @@ module.exports = async (bot) => {
             embeds: [ embed ]
         });
     });
-    
+
     bot.on("guildMemberAdd", async (member) => {
         let loggingChannel = getLoggingChannel(bot, member.guild);
         if (loggingChannel == null) return;
@@ -107,17 +108,17 @@ module.exports = async (bot) => {
             embeds: [ embed ]
         });
     });
-    
+
     bot.on("guildMemberRemove", async (member) => {
         let loggingChannel = getLoggingChannel(bot, member.guild);
         if (loggingChannel == null) return;
-        
+
         // Check audit logs for more info
         let fetchedLogs = await member.guild.fetchAuditLogs({
             limit: 6,
             type: AuditLogEvent.MemberKick
         }).catch(console.error);
-        
+
         let auditEntry = fetchedLogs.entries.filter(a => {
             return (
                 Date.now() - a.createdTimestamp < 20000 &&
@@ -142,7 +143,7 @@ module.exports = async (bot) => {
                 )
                 .setThumbnail(`https://cdn.discordapp.com/avatars/${member.user.id}/${member.user.avatar}.png`)
                 .setTimestamp()
-    
+
             // Send message in logging channel
             loggingChannel.send({
                 embeds: [ embed ]
@@ -162,14 +163,14 @@ module.exports = async (bot) => {
                 )
                 .setThumbnail(`https://cdn.discordapp.com/avatars/${member.user.id}/${member.user.avatar}.png`)
                 .setTimestamp()
-    
+
             // Send message in logging channel
             loggingChannel.send({
                 embeds: [ embed ]
             });
         }
     });
-    
+
     bot.on("guildBanAdd", async (ban) => {
         let loggingChannel = getLoggingChannel(bot, ban.guild);
         if (loggingChannel == null) return;
@@ -181,7 +182,7 @@ module.exports = async (bot) => {
             limit: 6,
             type: AuditLogEvent.MemberBanAdd
         }).catch(console.error);
-        
+
         let auditEntry = fetchedLogs.entries.filter(a => {
             return (
                 Date.now() - a.createdTimestamp < 20000 &&
@@ -216,19 +217,19 @@ module.exports = async (bot) => {
             embeds: [ embed ]
         });
     });
-    
+
     bot.on("guildBanRemove", async (ban) => {
         let loggingChannel = getLoggingChannel(bot, ban.guild);
         if (loggingChannel == null) return;
 
         if (!isLogged(bot, ban.guild.id, "member_unbanned")) return;
-        
+
         // Check audit logs for more info
         let fetchedLogs = await ban.guild.fetchAuditLogs({
             limit: 6,
             type: AuditLogEvent.MemberBanRemove
         }).catch(console.error);
-        
+
         let auditEntry = fetchedLogs.entries.filter(a => {
             return (
                 Date.now() - a.createdTimestamp < 20000 &&
@@ -262,7 +263,7 @@ module.exports = async (bot) => {
             embeds: [ embed ]
         });
     });
-    
+
     bot.on("inviteCreate", async (invite) => {
         let loggingChannel = getLoggingChannel(bot, invite.guild);
         if (loggingChannel == null) return;
@@ -288,7 +289,7 @@ module.exports = async (bot) => {
             embeds: [ embed ]
         });
     });
-    
+
     bot.on("inviteDelete", async (invite) => {
         let loggingChannel = getLoggingChannel(bot, invite.guild);
         if (loggingChannel == null) return;
@@ -300,7 +301,7 @@ module.exports = async (bot) => {
             limit: 6,
             type: AuditLogEvent.InviteDelete
         }).catch(console.error);
-        
+
         let auditEntry = fetchedLogs.entries.filter(a => {
             return (
                 Date.now() - a.createdTimestamp < 20000 &&
@@ -331,7 +332,7 @@ module.exports = async (bot) => {
             embeds: [ embed ]
         });
     });
-    
+
     // bot.on("channelPinsUpdate", async (channel, time) => {
     //     console.log(channel, time)
     // });
