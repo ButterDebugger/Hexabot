@@ -52,7 +52,7 @@ module.exports = async (bot) => {
         // Send message in logging channel
         loggingChannel.send({
             embeds: [ embed ]
-        });
+        }).catch(console.error);
     });
 
     bot.on("messageUpdate", async (oldMessage, newMessage) => {
@@ -79,7 +79,7 @@ module.exports = async (bot) => {
         // Send message in logging channel
         loggingChannel.send({
             embeds: [ embed ]
-        });
+        }).catch(console.error);
     });
 
     bot.on("guildMemberAdd", async (member) => {
@@ -106,7 +106,7 @@ module.exports = async (bot) => {
         // Send message in logging channel
         loggingChannel.send({
             embeds: [ embed ]
-        });
+        }).catch(console.error);
     });
 
     bot.on("guildMemberRemove", async (member) => {
@@ -147,7 +147,7 @@ module.exports = async (bot) => {
             // Send message in logging channel
             loggingChannel.send({
                 embeds: [ embed ]
-            });
+            }).catch(console.error);
         } else if (isLogged(bot, member.guild.id, "member_leaves")) {
             // Create message embed
             let embed = new EmbedBuilder()
@@ -167,7 +167,7 @@ module.exports = async (bot) => {
             // Send message in logging channel
             loggingChannel.send({
                 embeds: [ embed ]
-            });
+            }).catch(console.error);
         }
     });
 
@@ -215,7 +215,7 @@ module.exports = async (bot) => {
         // Send message in logging channel
         loggingChannel.send({
             embeds: [ embed ]
-        });
+        }).catch(console.error);
     });
 
     bot.on("guildBanRemove", async (ban) => {
@@ -261,7 +261,7 @@ module.exports = async (bot) => {
         // Send message in logging channel
         loggingChannel.send({
             embeds: [ embed ]
-        });
+        }).catch(console.error);
     });
 
     bot.on("inviteCreate", async (invite) => {
@@ -287,7 +287,7 @@ module.exports = async (bot) => {
         // Send message in logging channel
         loggingChannel.send({
             embeds: [ embed ]
-        });
+        }).catch(console.error);
     });
 
     bot.on("inviteDelete", async (invite) => {
@@ -330,7 +330,7 @@ module.exports = async (bot) => {
         // Send message in logging channel
         loggingChannel.send({
             embeds: [ embed ]
-        });
+        }).catch(console.error);
     });
 
     // bot.on("channelPinsUpdate", async (channel, time) => {
