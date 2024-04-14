@@ -95,7 +95,7 @@ module.exports = async (bot) => {
             .addFields(
                 { name: 'User Profile', value: [
                     `${bold("Profile")}: ${userMention(member.user.id)}`,
-                    `${bold("Discord Tag")}: ${member.user.username}#${member.user.discriminator}`,
+                    writeUserTagname(member.user),
                     `${bold("User ID")}: ${member.user.id}`,
                 ].join("\n") },
                 { name: 'Time Joined', value: time(Math.floor(member.joinedTimestamp / 1000), "f") },
@@ -134,7 +134,7 @@ module.exports = async (bot) => {
                 .addFields(
                     { name: 'User Profile', value: [
                         `${bold("Profile")}: ${userMention(member.user.id)}`,
-                        `${bold("Discord Tag")}: ${member.user.username}#${member.user.discriminator}`,
+                        writeUserTagname(member.user),
                         `${bold("User ID")}: ${member.user.id}`,
                     ].join("\n") },
                     { name: 'Member Since', value: time(Math.floor(member.joinedTimestamp / 1000), "f") },
@@ -156,7 +156,7 @@ module.exports = async (bot) => {
                 .addFields(
                     { name: 'User Profile', value: [
                         `${bold("Profile")}: ${userMention(member.user.id)}`,
-                        `${bold("Discord Tag")}: ${member.user.username}#${member.user.discriminator}`,
+                        writeUserTagname(member.user),
                         `${bold("User ID")}: ${member.user.id}`,
                     ].join("\n") },
                     { name: 'Member Since', value: time(Math.floor(member.joinedTimestamp / 1000), "f") },
@@ -197,7 +197,7 @@ module.exports = async (bot) => {
             .addFields(
                 { name: 'User Profile', value: [
                     `${bold("Profile")}: ${userMention(ban.user.id)}`,
-                    `${bold("Discord Tag")}: ${ban.user.username}#${ban.user.discriminator}`,
+                    writeUserTagname(ban.user),
                     `${bold("User ID")}: ${ban.user.id}`,
                 ].join("\n") },
             )
@@ -244,7 +244,7 @@ module.exports = async (bot) => {
             .addFields(
                 { name: 'User Profile', value: [
                     `${bold("Profile")}: ${userMention(ban.user.id)}`,
-                    `${bold("Discord Tag")}: ${ban.user.username}#${ban.user.discriminator}`,
+                    writeUserTagname(ban.user),
                     `${bold("User ID")}: ${ban.user.id}`,
                 ].join("\n") },
             )
@@ -338,4 +338,12 @@ module.exports = async (bot) => {
     // });
 
     console.log("Logging module has been loaded.")
+}
+
+function writeUserTagname(user) {
+    if (user.discriminator == 0) {
+        return `${bold("Username")}: ${user.username}`;
+    } else {
+        return `${bold("User Tag")}: ${user.username}#${user.discriminator}`;
+    }
 }
