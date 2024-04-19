@@ -7,8 +7,6 @@ import initCounting from "./counting.js";
 import initJoinLeaveMsgs from "./joinLeaveMsgs.js";
 import initAutoStickyRoles from "./autoStickyRoles.js";
 
-console.log(ConfigManager.botConfig)
-
 const { custom_activity } = ConfigManager.botConfig;
 
 const bot = new Client({
