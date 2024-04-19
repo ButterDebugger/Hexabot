@@ -55,8 +55,8 @@
 	"emojis": {
 		"up_vote": "👍",
 		"down_vote": "👎",
-		"check_mark": "1163654397218279464",
-		"cross_mark": "1163654395880280065"
+		"check_mark": "✅",
+		"cross_mark": "❎"
 	},
 	"json_spacing": 4
 }
