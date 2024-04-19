@@ -21,7 +21,7 @@ function getStickyRoles(bot, guild) {
     return stickyRoles === null ? [] : stickyRoles;
 }
 
-module.exports = async (bot) => {
+export default async (bot) => {
     bot.on("guildMemberAdd", async (member) => {
         let newRoles = [];
 
@@ -32,10 +32,10 @@ module.exports = async (bot) => {
             let previousRoles = getUsersPreviousRoles(bot, member);
             let stickyRoles = getStickyRoles(bot, member.guild);
             let roles = previousRoles.filter(roleId => stickyRoles.includes(roleId));
-            
+
             newRoles = newRoles.concat(roles);
         }
-        
+
         if (newRoles.length > 0) {
             member.roles.add(newRoles);
         }
@@ -45,7 +45,7 @@ module.exports = async (bot) => {
 
         let stickyRoles = getStickyRoles(bot, member.guild);
         let roles = member._roles.filter(roleId => stickyRoles.includes(roleId));
-        
+
         let guildData = bot.DataManager.getGuildData(member.guild.id);
         guildData[`sticky_roles:${member.user.id}`] = roles;
         bot.DataManager.setGuildData(member.guild.id, guildData);

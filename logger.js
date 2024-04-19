@@ -1,4 +1,4 @@
-const { EmbedBuilder, userMention, time, AuditLogEvent, bold, channelMention } = require("discord.js");
+import { EmbedBuilder, userMention, time, AuditLogEvent, bold, channelMention } from "discord.js";
 
 function getLoggingChannel(bot, guild) {
     let channelid = bot.ConfigManager.getConfigValue(guild.id, "logging_channel");
@@ -14,7 +14,7 @@ function isLogged(bot, guildid, key) {
     return bot.ConfigManager.getConfigValue(guildid, `log_${key}`) ? true : false;
 }
 
-module.exports = async (bot) => {
+export default async (bot) => {
     bot.on("messageDelete", async (message) => {
         let loggingChannel = getLoggingChannel(bot, message.guild);
         if (loggingChannel == null) return;

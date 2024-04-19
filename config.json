@@ -1,6 +1,7 @@
 {
-	"activity": {
+	"custom_activity": {
 		"status": "online",
+		"interval": 43200000,
 		"activities": [
 			"in many cups of coffee",
 			"at the edges of the known universe",
@@ -49,8 +50,7 @@
 				"name": "with my human friend",
 				"url": "https://twitch.tv/butterdebugger/"
 			}
-		],
-		"interval": 43200000
+		]
 	},
 	"emojis": {
 		"up_vote": "👍",

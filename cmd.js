@@ -1,16 +1,16 @@
-const { REST } = require("@discordjs/rest");
-const { Routes, Collection } = require("discord.js");
-const fs = require("node:fs");
+import { REST } from "@discordjs/rest";
+import { Routes, Collection } from "discord.js";
+import fs from "node:fs";
 
 const appCommands = [];
 const commands = new Collection();
 const customNamespaces = new Map();
 
 for (const file of fs
-	.readdirSync(`${process.cwd()}/commands/`)
+	.readdirSync(`./commands/`)
 	.filter((file) => file.endsWith(".js"))
 ) {
-	let command = require(`${process.cwd()}/commands/${file}`);
+	let command = await import(`./commands/${file}`);
 	let commandName = command.data.name;
 
 	appCommands.push(command.data.toJSON());
@@ -23,7 +23,7 @@ for (const file of fs
 
 const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN);
 
-module.exports = async (bot) => {
+export default async (bot) => {
 	// Register application slash commands
 	try {
 		console.log("Started refreshing application slash commands.");

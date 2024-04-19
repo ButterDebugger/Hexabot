@@ -1,4 +1,4 @@
-const { userMention } = require("discord.js");
+import { userMention } from "discord.js";
 
 function getJoinMsgChannel(bot, guild) {
     let channelId = bot.ConfigManager.getConfigValue(guild.id, "join_message_channel");
@@ -41,12 +41,12 @@ function userTagFormat(user) {
     return user.discriminator === "0" ? user.username : `${user.username}#${user.discriminator}`;
 }
 
-module.exports = async (bot) => {
+export default async (bot) => {
     bot.on("guildMemberAdd", async (member) => {
         let joinMsgChannel = getJoinMsgChannel(bot, member.guild);
         let joinMsg = getJoinMsg(bot, member);
         let joinPrivateMsg = getJoinPrivateMsg(bot, member);
-        
+
         if (joinMsgChannel !== null && typeof joinMsg == "string") {
             joinMsgChannel.send(joinMsg).catch(console.error);
         }

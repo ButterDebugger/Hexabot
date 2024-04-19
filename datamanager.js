@@ -1,10 +1,11 @@
-const fs = require("fs");
-const path = require("path");
-const { json_spacing } = require("./config.json");
+import fs from "node:fs";
+import path from "node:path";
+import * as ConfigManager from "./configManager.js";
 
 const dataPath = `${process.cwd()}/storage/data`;
+const { json_spacing } = ConfigManager.botConfig;
 
-function getDataContainer(key) {
+export function getDataContainer(key) {
 	if (typeof key !== "string") throw new TypeError("Key must be a string.");
 
 	let filePath = `${dataPath}/${key}.json`;
@@ -13,7 +14,7 @@ function getDataContainer(key) {
 	if (!fs.existsSync(filePath)) return {};
 	return JSON.parse(fs.readFileSync(filePath)) ?? {};
 }
-function setDataContainer(key, data) {
+export function setDataContainer(key, data) {
 	if (typeof key !== "string") throw new TypeError("Key must be a string.");
 	if (typeof data !== "object") throw new TypeError("Data must be an object.");
 
@@ -24,28 +25,19 @@ function setDataContainer(key, data) {
 		JSON.stringify(data, null, json_spacing)
 	);
 }
-function deleteDataContainer(key) {
+export function deleteDataContainer(key) {
 	if (typeof key !== "string") throw new TypeError("Key must be a string.");
 
 	let filePath = `${dataPath}/${key}.json`;
 	fs.unlinkSync(filePath);
 }
 
-function getGuildData(guildId) {
+export function getGuildData(guildId) {
 	return getDataContainer(`guilds/${guildId}`);
 }
-function setGuildData(guildId, data) {
+export function setGuildData(guildId, data) {
 	return setDataContainer(`guilds/${guildId}`, data);
 }
-function deleteGuildData(guildId) {
+export function deleteGuildData(guildId) {
 	return deleteDataContainer(`guilds/${guildId}`);
 }
-
-module.exports = {
-	getDataContainer,
-	setDataContainer,
-	deleteDataContainer,
-	getGuildData,
-	setGuildData,
-	deleteGuildData
-};

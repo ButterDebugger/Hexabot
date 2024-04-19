@@ -1,7 +1,9 @@
-const fs = require("fs");
-const { json_spacing } = require("./config.json");
+import fs from "node:fs";
+
+export const botConfig = JSON.parse(fs.readFileSync(`${process.cwd()}/config.json`));
 
 const configsPath = `${process.cwd()}/storage/configs`;
+const { json_spacing } = botConfig;
 
 function getDefaultConfig() {
 	return JSON.parse(
@@ -13,7 +15,7 @@ function configExists(id) {
 	return fs.existsSync(`${configsPath}/${id}.json`);
 }
 
-async function init(bot) {
+export async function init(bot) {
 	bot.on("guildCreate", async (guild) => {
 		console.log(`Joined guild "${guild.name}" (${guild.id}).`);
 
@@ -33,7 +35,7 @@ async function init(bot) {
 	});
 }
 
-async function refresh(bot) {
+export async function refresh(bot) {
 	let cleanids = fs
 		.readdirSync(`${configsPath}/`)
 		.filter((file) => file.endsWith(".json"))
@@ -70,11 +72,11 @@ async function refresh(bot) {
 	}
 }
 
-function resetConfig(id) {
+export function resetConfig(id) {
 	fs.writeFileSync(`${configsPath}/${id}.json`, "{}");
 }
 
-function getConfigValue(id, key) {
+export function getConfigValue(id, key) {
 	let config = Object.assign(
 		getDefaultConfig(),
 		JSON.parse(fs.readFileSync(`${configsPath}/${id}.json`))
@@ -82,7 +84,7 @@ function getConfigValue(id, key) {
 	return config[key];
 }
 
-function setConfigValue(id, key, value) {
+export function setConfigValue(id, key, value) {
 	let config = JSON.parse(fs.readFileSync(`${configsPath}/${id}.json`));
 	config[key] = value;
 	fs.writeFileSync(
@@ -91,7 +93,7 @@ function setConfigValue(id, key, value) {
 	);
 }
 
-function deleteConfigValue(id, key) {
+export function deleteConfigValue(id, key) {
 	let config = JSON.parse(fs.readFileSync(`${configsPath}/${id}.json`));
 	delete config[key];
 	fs.writeFileSync(
@@ -99,12 +101,3 @@ function deleteConfigValue(id, key) {
 		JSON.stringify(config, null, json_spacing)
 	);
 }
-
-module.exports = {
-	init,
-	refresh,
-	resetConfig,
-	getConfigValue,
-	setConfigValue,
-	deleteConfigValue
-};

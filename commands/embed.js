@@ -1,6 +1,6 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from "discord.js";
 
-const data = new SlashCommandBuilder()
+export const data = new SlashCommandBuilder()
 	.setName('embed')
 	.setDescription('Send an embed')
 	.setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
@@ -36,75 +36,72 @@ const data = new SlashCommandBuilder()
 			.setMaxLength(2048)
 	)
 
-module.exports = {
-	data: data,
-	onCommand: async (bot, interaction) => {
-		const { options } = interaction;
+export async function onCommand(bot, interaction) {
+	const { options } = interaction;
 
-		let title = options.getString("title");
-		let description = options.getString("description");
-		let color = options.getString("color");
-		let url = options.getString("url");
-		let footer = options.getString("footer");
+	let title = options.getString("title");
+	let description = options.getString("description");
+	let color = options.getString("color");
+	let url = options.getString("url");
+	let footer = options.getString("footer");
 
-		if (title === null && description === null && footer === null) {
+	if (title === null && description === null && footer === null) {
+		interaction.reply({
+			content: "Please provide a title, description, or footer.",
+			ephemeral: true
+		});
+		return;
+	}
+
+	let embed = new EmbedBuilder();
+
+	if (typeof title == "string") {
+		embed.setTitle(title);
+	}
+	if (typeof description == "string") {
+		embed.setDescription(description);
+	}
+	if (typeof color == "string") {
+		let colorRegex = /^#([0-9a-fA-F]{6})$/g;
+
+		if (colorRegex.test(color)) {
+			embed.setColor(color);
+		} else {
 			interaction.reply({
-				content: "Please provide a title, description, or footer.",
+				content: "Invalid color.",
 				ephemeral: true
 			});
 			return;
 		}
-
-		let embed = new EmbedBuilder();
-
-		if (typeof title == "string") {
-			embed.setTitle(title);
-		}
-		if (typeof description == "string") {
-			embed.setDescription(description);
-		}
-		if (typeof color == "string") {
-			let colorRegex = /^#([0-9a-fA-F]{6})$/g;
-
-			if (colorRegex.test(color)) {
-				embed.setColor(color);
-			} else {
-				interaction.reply({
-					content: "Invalid color.",
-					ephemeral: true
-				});
-				return;
-			}
-		}
-		if (typeof url == "string") {
-			try {
-				embed.setURL(url);
-			} catch (error) {
-				interaction.reply({
-					content: "Invalid url.",
-					ephemeral: true
-				});
-				return;
-			}
-		}
-		if (typeof footer == "string") {
-			embed.setFooter({
-				text: footer
-			});
-		}
-
-		interaction.channel.send({
-			embeds: [ embed ]
-		}).then(() => {
+	}
+	if (typeof url == "string") {
+		try {
+			embed.setURL(url);
+		} catch (error) {
 			interaction.reply({
-				content: "Embed has been sent!",
+				content: "Invalid url.",
 				ephemeral: true
 			});
-		}).catch(() => {
-			interaction.reply({
-				content: "Sorry, I wasn't able to send the embed.",
-				ephemeral: true
-			});
+			return;
+		}
+	}
+	if (typeof footer == "string") {
+		embed.setFooter({
+			text: footer
 		});
 	}
-};
+
+	interaction.channel.send({
+		embeds: [ embed ]
+	}).then(() => {
+		interaction.reply({
+			content: "Embed has been sent!",
+			ephemeral: true
+		});
+	}).catch(() => {
+		interaction.reply({
+			content: "Sorry, I wasn't able to send the embed.",
+			ephemeral: true
+		});
+	});
+}

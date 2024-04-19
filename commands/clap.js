@@ -1,6 +1,6 @@
-const { SlashCommandBuilder } = require("discord.js");
+import { SlashCommandBuilder } from "discord.js";
 
-const data = new SlashCommandBuilder()
+export const data = new SlashCommandBuilder()
 	.setName('clap')
 	.setDescription('👏 Add 👏 claps 👏 to 👏 your 👏 message 👏')
 	.addStringOption(option =>
@@ -11,18 +11,15 @@ const data = new SlashCommandBuilder()
 			.setMaxLength(2000)
 	);
 
-module.exports = {
-	data: data,
-	onCommand: async (bot, interaction) => {
-		const { options } = interaction;
+export async function onCommand(bot, interaction) {
+	const { options } = interaction;
 
-		let message = options.getString("message");
+	let message = options.getString("message");
 
-		message = "👏 " + message.replaceAll(" ", " 👏 ") + " 👏";
-		message = message.substring(0, 2000);
+	message = "👏 " + message.replaceAll(" ", " 👏 ") + " 👏";
+	message = message.substring(0, 2000);
 
-		interaction.reply({
-			content: message,
-		});
-	}
-};
+	interaction.reply({
+		content: message,
+	});
+}

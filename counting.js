@@ -1,5 +1,7 @@
-const { EmbedBuilder, inlineCode } = require("discord.js");
-const { emojis } = require("./config.json");
+import { EmbedBuilder, inlineCode } from "discord.js";
+import * as ConfigManager from "./configManager.js";
+
+const { emojis } = ConfigManager.botConfig;
 
 function getCountingChannel(bot, guild) {
     let channelId = bot.ConfigManager.getConfigValue(guild.id, "counting_channel");
@@ -17,7 +19,7 @@ function userTagFormat(user) {
     return user.discriminator === "0" ? user.username : `${user.username}#${user.discriminator}`;
 }
 
-module.exports = async (bot) => {
+export default async (bot) => {
     bot.on("messageCreate", async (message) => {
         let countingChannel = getCountingChannel(bot, message.guild);
         let countingTopic = getCountingTopic(bot, message.guild);

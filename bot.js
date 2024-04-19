@@ -1,6 +1,15 @@
-const { Client, GatewayIntentBits, ActivityType } = require("discord.js");
-const config = require("./config.json");
-require("dotenv").config();
+import { Client, GatewayIntentBits, ActivityType } from "discord.js";
+import * as ConfigManager from "./configManager.js";
+import * as DataManager from "./dataManager.js";
+import initCmd from "./cmd.js";
+import initLogger from "./logger.js";
+import initCounting from "./counting.js";
+import initJoinLeaveMsgs from "./joinLeaveMsgs.js";
+import initAutoStickyRoles from "./autoStickyRoles.js";
+
+console.log(ConfigManager.botConfig)
+
+const { custom_activity } = ConfigManager.botConfig;
 
 const bot = new Client({
     intents: [
@@ -14,38 +23,39 @@ const bot = new Client({
     ]
 });
 
-const ConfigManager = bot.ConfigManager = require("./configmanager.js");
-const DataManager = bot.DataManager = require("./datamanager.js");
+bot.ConfigManager = ConfigManager;
+bot.DataManager = DataManager;
 
 bot.on("ready", async () => {
     // Start required modules
     await ConfigManager.refresh(bot);
     await ConfigManager.init(bot);
-    
-    await require("./cmd.js")(bot);
+
+    initCmd(bot);
 
     // Start bot modules
-    await require("./logger.js")(bot);
-    await require("./counting.js")(bot);
-    await require("./joinleavemsgs.js")(bot);
-    await require("./autoStickyRoles.js")(bot);
-    
+    initLogger(bot);
+    initCounting(bot);
+    initJoinLeaveMsgs(bot);
+    initAutoStickyRoles(bot);
+
     // Set bot status and activity
-    bot.user.setStatus(config.activity.status);
+    console.log(custom_activity)
+    bot.user.setStatus(custom_activity.status);
 
     const updateActivity = () => {
-        var actIndex = Math.floor(Math.random() * config.activity.activities.length);
-        var activity = config.activity.activities[actIndex];
+        let actIndex = Math.floor(Math.random() * custom_activity.activities.length);
+        let activity = custom_activity.activities[actIndex];
 
         if (typeof activity == "object" && typeof activity?.type == "string") {
             activity.type = ActivityType[activity.type];
         }
-        
+
         bot.user.setActivity(activity);
     };
 
     updateActivity();
-    setInterval(updateActivity, config.activity.interval);
+    setInterval(updateActivity, custom_activity.interval);
 
     // Log bot startup
     console.log(`Logged in as ${bot.user.tag}!`);

@@ -1,23 +1,20 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 
-const data = new SlashCommandBuilder()
+export const data = new SlashCommandBuilder()
 	.setName('ping')
 	.setDescription('Ping the bot');
 
-module.exports = {
-	data: data,
-	onCommand: async (bot, interaction) => {
-		var embed = new EmbedBuilder()
-			.setColor(0x5865f2)
-			.setTitle("Pong! 🏓")
-			.setTimestamp()
-			.setFooter({
-				text: `Latency: ${bot.ws.ping}ms`,
-			});
-
-		interaction.reply({
-			embeds: [ embed ],
-			ephemeral: true
+export async function onCommand(bot, interaction) {
+	var embed = new EmbedBuilder()
+		.setColor(0x5865f2)
+		.setTitle("Pong! 🏓")
+		.setTimestamp()
+		.setFooter({
+			text: `Latency: ${bot.ws.ping}ms`,
 		});
-	}
-};
+
+	interaction.reply({
+		embeds: [ embed ],
+		ephemeral: true
+	});
+}

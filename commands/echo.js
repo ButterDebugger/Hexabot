@@ -1,6 +1,6 @@
-const { SlashCommandBuilder, ChannelType } = require("discord.js");
+import { SlashCommandBuilder, ChannelType } from "discord.js";
 
-const data = new SlashCommandBuilder()
+export const data = new SlashCommandBuilder()
 	.setName('echo')
 	.setDescription('Makes the bot say anything you want')
 	.addStringOption(option =>
@@ -17,25 +17,22 @@ const data = new SlashCommandBuilder()
 			.addChannelTypes(ChannelType.GuildText)
 	);
 
-module.exports = {
-	data: data,
-	onCommand: async (bot, interaction) => {
-		const { options } = interaction;
+export async function onCommand(bot, interaction) {
+	const { options } = interaction;
 
-		let message = options.getString("message");
-		let channel = options.getChannel("channel") ?? interaction.channel;
-		
-		await interaction.deferReply({
-			content: "Sending message...",
-			ephemeral: true
-		});
+	let message = options.getString("message");
+	let channel = options.getChannel("channel") ?? interaction.channel;
 
-		channel.send({
-			content: message
-		}).then(() => {
-			interaction.editReply({
-				content: `Message has been sent!`,
-			});
+	await interaction.deferReply({
+		content: "Sending message...",
+		ephemeral: true
+	});
+
+	channel.send({
+		content: message
+	}).then(() => {
+		interaction.editReply({
+			content: `Message has been sent!`,
 		});
-	}
-};
+	});
+}

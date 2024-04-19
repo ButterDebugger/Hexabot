@@ -1,6 +1,6 @@
-const { SlashCommandBuilder } = require("discord.js");
+import { SlashCommandBuilder } from "discord.js";
 
-const data = new SlashCommandBuilder()
+export const data = new SlashCommandBuilder()
 	.setName('clear')
 	.setDescription('Bulk delete messages from a channel')
 	.addIntegerOption(option =>
@@ -12,30 +12,27 @@ const data = new SlashCommandBuilder()
 			.setMaxValue(100)
 	);
 
-module.exports = {
-	data: data,
-	onCommand: async (bot, interaction) => {
-		const { options } = interaction;
-		
-		let amount = options.getInteger("amount");
+export async function onCommand(bot, interaction) {
+	const { options } = interaction;
 
-		await interaction.deferReply({
-			content: `Clearing ${amount} messages...`,
+	let amount = options.getInteger("amount");
+
+	await interaction.deferReply({
+		content: `Clearing ${amount} messages...`,
+		ephemeral: true
+	});
+
+	try {
+		var messages = await interaction.channel.bulkDelete(amount, false);
+
+		interaction.editReply({
+			content: `Bulk deleted ${messages.size} ${messages.size > 1 ? "messages" : "message"}.`,
 			ephemeral: true
 		});
-
-		try {
-			var messages = await interaction.channel.bulkDelete(amount, false);
-
-			interaction.editReply({
-				content: `Bulk deleted ${messages.size} ${messages.size > 1 ? "messages" : "message"}.`,
-				ephemeral: true
-			});
-		} catch (error) {
-			interaction.editReply({
-				content: `Sorry, I wasn't able to bulk delete messages.`,
-				ephemeral: true
-			});
-		}
+	} catch (error) {
+		interaction.editReply({
+			content: `Sorry, I wasn't able to bulk delete messages.`,
+			ephemeral: true
+		});
 	}
-};
+}

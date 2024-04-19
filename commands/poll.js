@@ -1,7 +1,9 @@
-const { SlashCommandBuilder, userMention, EmbedBuilder } = require("discord.js");
-const { emojis } = require("../config.json");
+import { SlashCommandBuilder, userMention, EmbedBuilder } from "discord.js";
+import * as ConfigManager from "../configManager.js";
 
-const data = new SlashCommandBuilder()
+const { emojis } = ConfigManager.botConfig;
+
+export const data = new SlashCommandBuilder()
 	.setName('poll')
 	.setDescription('Create a poll')
 	.addStringOption(option =>
@@ -12,33 +14,30 @@ const data = new SlashCommandBuilder()
 			.setMaxLength(1024)
 	);
 
-module.exports = {
-	data: data,
-	onCommand: async (bot, interaction) => {
-		const { options } = interaction;
+export async function onCommand(bot, interaction) {
+	const { options } = interaction;
 
-		let message = options.getString("message");
+	let message = options.getString("message");
 
-		try {
-			var embed = new EmbedBuilder()
-				.setColor(0x00AE86)
-				.setTitle("▬▬▬▬▬▬▬▬▬▬▬▬▬« Poll »▬▬▬▬▬▬▬▬▬▬▬▬▬")
-				.addFields({ name: 'Created By:', value: userMention(interaction.user.id) })
-				.addFields({ name: 'Description:', value: message })
-				.setTimestamp();
-	
-			var reply = await interaction.reply({
-				embeds: [ embed ],
-				fetchReply: true
-			});
-			
-			await reply.react(emojis.up_vote).catch(console.error);;
-			await reply.react(emojis.down_vote).catch(console.error);;
-		} catch (error) {
-			interaction.reply({
-				content: "Sorry, I wasn't able to create the poll.",
-				ephemeral: true
-			});
-		}
+	try {
+		var embed = new EmbedBuilder()
+			.setColor(0x00AE86)
+			.setTitle("▬▬▬▬▬▬▬▬▬▬▬▬▬« Poll »▬▬▬▬▬▬▬▬▬▬▬▬▬")
+			.addFields({ name: 'Created By:', value: userMention(interaction.user.id) })
+			.addFields({ name: 'Description:', value: message })
+			.setTimestamp();
+
+		var reply = await interaction.reply({
+			embeds: [ embed ],
+			fetchReply: true
+		});
+
+		await reply.react(emojis.up_vote).catch(console.error);;
+		await reply.react(emojis.down_vote).catch(console.error);;
+	} catch (error) {
+		interaction.reply({
+			content: "Sorry, I wasn't able to create the poll.",
+			ephemeral: true
+		});
 	}
-};
+}

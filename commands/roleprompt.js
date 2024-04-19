@@ -1,6 +1,6 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, roleMention, PermissionFlagsBits } = require("discord.js");
+import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, roleMention, PermissionFlagsBits } from "discord.js";
 
-const data = new SlashCommandBuilder()
+export const data = new SlashCommandBuilder()
 	.setName('roleprompt')
 	.setDescription('Create button to assign a role to a user')
 	.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
@@ -36,85 +36,84 @@ const data = new SlashCommandBuilder()
 			)
 	);
 
-module.exports = {
-	data: data,
-	customNamespace: "roleprompt",
-	onCommand: async (bot, interaction) => {
-		const { options } = interaction;
+export const customNamespace = "roleprompt";
 
-		let message = options.getString("message");
-		let label = options.getString("label");
-		let role = options.getRole("role");
-		let color = options.getString("color");
+export async function onCommand(bot, interaction) {
+	const { options } = interaction;
 
-		if (role.rawPosition == 0) {
-			interaction.reply({
-				content: "You can't assign @everyone to a role.",
-				ephemeral: true
-			});
-			return;
-		}
+	let message = options.getString("message");
+	let label = options.getString("label");
+	let role = options.getRole("role");
+	let color = options.getString("color");
 
-		if (typeof color == "string") {
-			if (color === "blue") {
-				color = ButtonStyle.Primary;
-			} else if (color === "gray") {
-				color = ButtonStyle.Secondary;
-			} else if (color === "green") {
-				color = ButtonStyle.Success;
-			} else if (color === "red") {
-				color = ButtonStyle.Danger;
-			}
-		} else {
-			color = ButtonStyle.Primary;
-		}
-
-		var row = new ActionRowBuilder()
-			.addComponents(
-				new ButtonBuilder()
-					.setCustomId(`roleprompt:${role.id}`)
-					.setLabel(label)
-					.setStyle(color)
-			);
-
+	if (role.rawPosition == 0) {
 		interaction.reply({
-			content: message,
-			components: [ row ]
+			content: "You can't assign @everyone to a role.",
+			ephemeral: true
 		});
-	},
-	onButton: async (bot, interaction) => {
-		if (!interaction.guild.members.me.permissions.has("MANAGE_ROLES")) {
-			interaction.reply({
-				content: "Sorry, I don't have permission to assign roles.",
-				ephemeral: true
-			});
-			return;
-		}
-
-		let roleId = /roleprompt:([0-9]+)/.exec(interaction.customId)[1];
-		let role = interaction.member.roles.cache.find(r => r.id == roleId);
-
-		try {
-			if (role) {
-				await interaction.member.roles.remove(role);
-
-				interaction.reply({
-					content: `:regional_indicator_x: Role unassigned ${roleMention(roleId)}`,
-					ephemeral: true
-				});
-			} else {
-				await interaction.member.roles.add(roleId);
-
-				interaction.reply({
-					content: `:white_check_mark: Role assigned ${roleMention(roleId)}`,
-					ephemeral: true
-				});
-			}
-		} catch (error) {
-			interaction.reply({
-				content: `Sorry, I wasn't able to assign the role.`,
-				ephemeral: true
-			});
-		}
+		return;
 	}
-};
+
+	if (typeof color == "string") {
+		if (color === "blue") {
+			color = ButtonStyle.Primary;
+		} else if (color === "gray") {
+			color = ButtonStyle.Secondary;
+		} else if (color === "green") {
+			color = ButtonStyle.Success;
+		} else if (color === "red") {
+			color = ButtonStyle.Danger;
+		}
+	} else {
+		color = ButtonStyle.Primary;
+	}
+
+	var row = new ActionRowBuilder()
+		.addComponents(
+			new ButtonBuilder()
+				.setCustomId(`roleprompt:${role.id}`)
+				.setLabel(label)
+				.setStyle(color)
+		);
+
+	interaction.reply({
+		content: message,
+		components: [ row ]
+	});
+}
+
+export async function onButton(bot, interaction) {
+	if (!interaction.guild.members.me.permissions.has("MANAGE_ROLES")) {
+		interaction.reply({
+			content: "Sorry, I don't have permission to assign roles.",
+			ephemeral: true
+		});
+		return;
+	}
+
+	let roleId = /roleprompt:([0-9]+)/.exec(interaction.customId)[1];
+	let role = interaction.member.roles.cache.find(r => r.id == roleId);
+
+	try {
+		if (role) {
+			await interaction.member.roles.remove(role);
+
+			interaction.reply({
+				content: `:regional_indicator_x: Role unassigned ${roleMention(roleId)}`,
+				ephemeral: true
+			});
+		} else {
+			await interaction.member.roles.add(roleId);
+
+			interaction.reply({
+				content: `:white_check_mark: Role assigned ${roleMention(roleId)}`,
+				ephemeral: true
+			});
+		}
+	} catch (error) {
+		interaction.reply({
+			content: `Sorry, I wasn't able to assign the role.`,
+			ephemeral: true
+		});
+	}
+}

@@ -1,6 +1,6 @@
-const { SlashCommandBuilder } = require("discord.js");
+import { SlashCommandBuilder } from "discord.js";
 
-const data = new SlashCommandBuilder()
+export const data = new SlashCommandBuilder()
 	.setName('roll')
 	.setDescription('Roll a die')
 	.addIntegerOption(option =>
@@ -11,21 +11,18 @@ const data = new SlashCommandBuilder()
 			.setMaxValue(100)
 	);
 
-module.exports = {
-	data: data,
-	onCommand: async (bot, interaction) => {
-		const { options } = interaction;
+export async function onCommand(bot, interaction) {
+	const { options } = interaction;
 
-		let sides = options.getInteger("sides") ?? 6;
+	let sides = options.getInteger("sides") ?? 6;
 
-		await interaction.deferReply({
-			content: "Rolling a die...",
-		});
+	await interaction.deferReply({
+		content: "Rolling a die...",
+	});
 
-		let roll = Math.floor(Math.random() * sides) + 1;
-		
-		interaction.editReply({
-			content: `You rolled a ${roll}!`,
-		});
-	}
-};
+	let roll = Math.floor(Math.random() * sides) + 1;
+
+	interaction.editReply({
+		content: `You rolled a ${roll}!`,
+	});
+}
