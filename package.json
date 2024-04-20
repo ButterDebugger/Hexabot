@@ -27,7 +27,8 @@
       "storage/configs",
       "storage/data"
     ],
-    "ext": "js,json"
+    "ext": "js,json",
+    "exec": "npm start"
   },
   "engines": {
     "node": ">=20.6.1"
