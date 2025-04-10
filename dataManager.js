@@ -8,7 +8,7 @@ const { json_spacing } = ConfigManager.botConfig;
 export function getDataContainer(key) {
 	if (typeof key !== "string") throw new TypeError("Key must be a string.");
 
-	let filePath = `${dataPath}/${key}.json`;
+	const filePath = `${dataPath}/${key}.json`;
 	fs.mkdirSync(path.dirname(filePath), { recursive: true });
 
 	if (!fs.existsSync(filePath)) return {};
@@ -18,17 +18,14 @@ export function setDataContainer(key, data) {
 	if (typeof key !== "string") throw new TypeError("Key must be a string.");
 	if (typeof data !== "object") throw new TypeError("Data must be an object.");
 
-	let filePath = `${dataPath}/${key}.json`;
+	const filePath = `${dataPath}/${key}.json`;
 	fs.mkdirSync(path.dirname(filePath), { recursive: true });
-	fs.writeFileSync(
-		filePath,
-		JSON.stringify(data, null, json_spacing)
-	);
+	fs.writeFileSync(filePath, JSON.stringify(data, null, json_spacing));
 }
 export function deleteDataContainer(key) {
 	if (typeof key !== "string") throw new TypeError("Key must be a string.");
 
-	let filePath = `${dataPath}/${key}.json`;
+	const filePath = `${dataPath}/${key}.json`;
 	fs.unlinkSync(filePath);
 }
 

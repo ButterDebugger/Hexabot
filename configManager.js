@@ -1,13 +1,15 @@
 import fs from "node:fs";
 
-export const botConfig = JSON.parse(fs.readFileSync(`${process.cwd()}/config.json`));
+export const botConfig = JSON.parse(
+	fs.readFileSync(`${process.cwd()}/config.json`),
+);
 
 const configsPath = `${process.cwd()}/storage/configs`;
 const { json_spacing } = botConfig;
 
 function getDefaultConfig() {
 	return JSON.parse(
-		fs.readFileSync(`${process.cwd()}/storage/defaultconfig.json`)
+		fs.readFileSync(`${process.cwd()}/storage/defaultconfig.json`),
 	);
 }
 
@@ -43,8 +45,8 @@ export async function refresh(bot) {
 
 	console.log(
 		`Refreshing ${bot.guilds.cache.size} ${
-			bot.guilds.cache.size == 1 ? "config" : "configs"
-		}.`
+			bot.guilds.cache.size === 1 ? "config" : "configs"
+		}.`,
 	);
 
 	for (const guild of bot.guilds.cache.values()) {
@@ -61,8 +63,8 @@ export async function refresh(bot) {
 		// If there are any leftover configs, delete them
 		console.log(
 			`Cleaning up ${cleanids.length} ${
-				cleanids.length == 1 ? "config" : "configs"
-			}.`
+				cleanids.length === 1 ? "config" : "configs"
+			}.`,
 		);
 
 		for (const id of cleanids) {
@@ -77,27 +79,27 @@ export function resetConfig(id) {
 }
 
 export function getConfigValue(id, key) {
-	let config = Object.assign(
+	const config = Object.assign(
 		getDefaultConfig(),
-		JSON.parse(fs.readFileSync(`${configsPath}/${id}.json`))
+		JSON.parse(fs.readFileSync(`${configsPath}/${id}.json`)),
 	);
 	return config[key];
 }
 
 export function setConfigValue(id, key, value) {
-	let config = JSON.parse(fs.readFileSync(`${configsPath}/${id}.json`));
+	const config = JSON.parse(fs.readFileSync(`${configsPath}/${id}.json`));
 	config[key] = value;
 	fs.writeFileSync(
 		`${configsPath}/${id}.json`,
-		JSON.stringify(config, null, json_spacing)
+		JSON.stringify(config, null, json_spacing),
 	);
 }
 
 export function deleteConfigValue(id, key) {
-	let config = JSON.parse(fs.readFileSync(`${configsPath}/${id}.json`));
+	const config = JSON.parse(fs.readFileSync(`${configsPath}/${id}.json`));
 	delete config[key];
 	fs.writeFileSync(
 		`${configsPath}/${id}.json`,
-		JSON.stringify(config, null, json_spacing)
+		JSON.stringify(config, null, json_spacing),
 	);
 }

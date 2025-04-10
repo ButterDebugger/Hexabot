@@ -18,8 +18,8 @@ const bot = new Client({
 		GatewayIntentBits.GuildBans,
 		GatewayIntentBits.GuildModeration,
 		GatewayIntentBits.MessageContent,
-		GatewayIntentBits.GuildInvites
-	]
+		GatewayIntentBits.GuildInvites,
+	],
 });
 
 bot.ConfigManager = ConfigManager;
@@ -42,12 +42,12 @@ bot.on("ready", async () => {
 	bot.user.setStatus(custom_activity.status);
 
 	const updateActivity = () => {
-		let actIndex = Math.floor(
-			Math.random() * custom_activity.activities.length
+		const actIndex = Math.floor(
+			Math.random() * custom_activity.activities.length,
 		);
-		let activity = custom_activity.activities[actIndex];
+		const activity = custom_activity.activities[actIndex];
 
-		if (typeof activity == "object" && typeof activity?.type == "string") {
+		if (typeof activity === "object" && typeof activity?.type === "string") {
 			activity.type = ActivityType[activity.type];
 		}
 
